@@ -20,6 +20,7 @@ type User struct {
 	CommonName        string   `json:"common_name,omitempty"`
 	Surname           string   `json:"surname,omitempty"`
 	GivenName         string   `json:"given_name,omitempty"`
+	Eppn              string   `json:"eppn,omitempty"`
 	ScopedAffiliation string   `json:"scoped_affiliation,omitempty"`
 }
 

@@ -671,6 +671,16 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 				Value: session.UserEmail,
 			}},
 		})
+		attributes = append(attributes, Attribute{
+			FriendlyName: "email",
+			Name:         "urn:oid:1.2.840.113549.1.9.1.1",
+			NameFormat:   "urn:oasis:names:tc:SAML:2.0:attrname-format:uri",
+			Values: []AttributeValue{{
+				Type:  "xs:string",
+				Value: session.UserEmail,
+			}},
+		})
+
 	}
 	if session.UserSurname != "" {
 		attributes = append(attributes, Attribute{
@@ -784,7 +794,7 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 				{
 					Method: "urn:oasis:names:tc:SAML:2.0:cm:bearer",
 					SubjectConfirmationData: &SubjectConfirmationData{
-						Address:      req.HTTPRequest.RemoteAddr,
+						//Address:      req.HTTPRequest.RemoteAddr,
 						InResponseTo: req.Request.ID,
 						NotOnOrAfter: req.Now.Add(MaxIssueDelay),
 						Recipient:    req.ACSEndpoint.Location,

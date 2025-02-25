@@ -5,6 +5,7 @@ package samlidp
 import (
 	"crypto"
 	"crypto/x509"
+	"fmt"
 	"net/http"
 	"net/url"
 	"regexp"

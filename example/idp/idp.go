@@ -100,6 +100,7 @@ func main() {
 		CommonName:     "Alice Smith",
 		Surname:        "Smith",
 		GivenName:      "Alice",
+		Eppn:           "alice@example.se",
 	})
 	if err != nil {
 		logr.Fatalf("%s", err)
@@ -113,6 +114,7 @@ func main() {
 		CommonName:     "Bob Smith",
 		Surname:        "Smith",
 		GivenName:      "Bob",
+		Eppn:           "bob@example.se",
 	})
 	if err != nil {
 		logr.Fatalf("%s", err)
