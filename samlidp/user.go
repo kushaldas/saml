@@ -20,8 +20,8 @@ type User struct {
 	CommonName        string   `json:"common_name,omitempty"`
 	Surname           string   `json:"surname,omitempty"`
 	GivenName         string   `json:"given_name,omitempty"`
-	Eppn              string   `json:"eppn,omitempty"`
 	ScopedAffiliation string   `json:"scoped_affiliation,omitempty"`
+	Password          string   `json:"password,omitempty"`
 }
 
 // HandleListUsers handles the `GET /users/` request and responds with a JSON formatted list

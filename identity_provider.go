@@ -9,6 +9,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -648,7 +649,6 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 			}
 		}
 	}
-
 	if session.UserName != "" {
 		attributes = append(attributes, Attribute{
 			FriendlyName: "uid",
@@ -775,6 +775,9 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 		nameIDFormat = session.NameIDFormat
 	}
 
+	// Added by Kushal
+	ipaddr, _, _ := net.SplitHostPort(req.HTTPRequest.RemoteAddr)
+
 	req.Assertion = &Assertion{
 		ID:           fmt.Sprintf("id-%x", randomBytes(20)),
 		IssueInstant: TimeNow(),
@@ -795,6 +798,7 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 					Method: "urn:oasis:names:tc:SAML:2.0:cm:bearer",
 					SubjectConfirmationData: &SubjectConfirmationData{
 						//Address:      req.HTTPRequest.RemoteAddr,
+						Address:      ipaddr,
 						InResponseTo: req.Request.ID,
 						NotOnOrAfter: req.Now.Add(MaxIssueDelay),
 						Recipient:    req.ACSEndpoint.Location,
@@ -816,7 +820,8 @@ func (DefaultAssertionMaker) MakeAssertion(req *IdpAuthnRequest, session *Sessio
 				AuthnInstant: session.CreateTime,
 				SessionIndex: session.Index,
 				SubjectLocality: &SubjectLocality{
-					Address: req.HTTPRequest.RemoteAddr,
+					//Address: req.HTTPRequest.RemoteAddr,
+					Address: ipaddr,
 				},
 				AuthnContext: AuthnContext{
 					AuthnContextClassRef: &AuthnContextClassRef{

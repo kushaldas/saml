@@ -46,7 +46,6 @@ func (s *Server) GetSession(w http.ResponseWriter, r *http.Request, req *saml.Id
 			s.sendLoginForm(w, r, req, "Invalid username or password")
 			return nil
 		}
-
 		session := &saml.Session{
 			ID:         base64.StdEncoding.EncodeToString(randomBytes(32)),
 			NameID:     user.Email,

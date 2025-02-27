@@ -5,7 +5,6 @@ package samlidp
 import (
 	"crypto"
 	"crypto/x509"
-	"fmt"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -19,12 +18,13 @@ import (
 
 // Options represent the parameters to New() for creating a new IDP server
 type Options struct {
-	URL         url.URL
-	Key         crypto.PrivateKey
-	Signer      crypto.Signer
-	Logger      logger.Interface
-	Certificate *x509.Certificate
-	Store       Store
+	URL           url.URL
+	Key           crypto.PrivateKey
+	Signer        crypto.Signer
+	Logger        logger.Interface
+	Certificate   *x509.Certificate
+	Store         Store
+	Intermediates []*x509.Certificate
 }
 
 // Server represents an IDP server. The server provides the following URLs:
