@@ -1,9 +1,10 @@
 module github.com/crewjam/saml
 
 go 1.19
+toolchain go1.24.1
 
 require (
-	github.com/beevik/etree v1.2.0
+	github.com/beevik/etree v1.5.0
 	github.com/crewjam/httperr v0.2.0
 	github.com/dchest/uniuri v1.2.0
 	github.com/golang-jwt/jwt/v4 v4.5.0
