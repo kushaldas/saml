@@ -1,0 +1,13 @@
+services:
+  idp2:
+    build:
+      context: ../../
+      dockerfile: example/idp2/Dockerfile
+    command: ["-idp", "${IDP_BASE_URL:-https://localhost:9090}", "-bind", ":8080"]
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "127.0.0.1:9090:8080"
+    volumes:
+      - ./data:/data

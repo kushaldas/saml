@@ -18,6 +18,132 @@ import (
 
 var sessionMaxAge = time.Hour
 
+const loginFormTemplate = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In &mdash; Kushal's Identity Provider for Teaching</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&amp;family=Source+Sans+3:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --navy: #002b5c; --navy-light: #003d82; --blue: #1d6fa5;
+            --sky: #e8f1f8; --white: #ffffff; --text: #1c2536;
+            --muted: #5a6678; --light: #8892a4; --border: #dde3ea;
+            --err-bg: #fef2f2; --err-text: #b91c1c; --err-border: #fca5a5;
+        }
+        body {
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            color: var(--text); background: var(--white);
+            min-height: 100vh; display: flex; flex-direction: column;
+        }
+        .topbar { height: 4px; background: linear-gradient(90deg, var(--navy), var(--blue)); }
+        .header { padding: 2.5rem 1rem 1rem; text-align: center; }
+        .header h1 {
+            font-family: 'Lora', Georgia, serif; font-weight: 600;
+            font-size: 1.4rem; color: var(--navy); letter-spacing: -0.02em;
+        }
+        .main {
+            flex: 1; display: flex; align-items: flex-start;
+            justify-content: center; padding: 1rem 1.5rem 3rem;
+        }
+        .card {
+            width: 100%; max-width: 400px;
+            border: 1px solid var(--border); border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,43,92,.05), 0 6px 16px rgba(0,43,92,.03);
+            padding: 2.25rem 2rem;
+        }
+        .card-heading {
+            font-family: 'Lora', Georgia, serif; font-weight: 600;
+            font-size: 1.25rem; color: var(--navy); margin-bottom: 0.35rem;
+        }
+        .card-sub {
+            font-size: 0.9rem; color: var(--muted);
+            margin-bottom: 1.75rem; line-height: 1.5;
+        }
+        .toast {
+            background: var(--err-bg); border: 1px solid var(--err-border);
+            color: var(--err-text); padding: 0.65rem 0.9rem;
+            border-radius: 6px; font-size: 0.875rem;
+            margin-bottom: 1.25rem; line-height: 1.4;
+        }
+        .field { margin-bottom: 1.15rem; }
+        .field label {
+            display: block; font-size: 0.825rem; font-weight: 500;
+            color: var(--text); margin-bottom: 0.35rem;
+        }
+        .field input {
+            width: 100%; padding: 0.6rem 0.8rem;
+            font-family: inherit; font-size: 0.925rem;
+            color: var(--text); background: var(--white);
+            border: 1px solid var(--border); border-radius: 6px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .field input:focus {
+            outline: none; border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(29,111,165,.1);
+        }
+        .btn-submit {
+            width: 100%; padding: 0.7rem;
+            font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            color: var(--white); background: var(--navy);
+            border: none; border-radius: 6px;
+            cursor: pointer; transition: background 0.15s; margin-top: 0.25rem;
+        }
+        .btn-submit:hover { background: var(--navy-light); }
+        .btn-submit:active { background: #001f42; }
+        .sep { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+        .resource {
+            display: flex; align-items: center; gap: 0.65rem;
+            padding: 0.75rem 0.85rem; background: var(--sky);
+            border-radius: 6px; text-decoration: none; transition: background 0.15s;
+        }
+        .resource:hover { background: #dae7f2; }
+        .resource svg { flex-shrink: 0; color: var(--navy); }
+        .resource-text { line-height: 1.35; }
+        .resource-title { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
+        .resource-desc { font-size: 0.78rem; color: var(--muted); }
+        .footer { text-align: center; padding: 1.25rem; font-size: 0.78rem; color: var(--light); }
+    </style>
+</head>
+<body>
+    <div class="topbar"></div>
+    <div class="header"><h1>Kushal's Identity Provider for Teaching</h1></div>
+    <div class="main">
+        <div class="card">
+            <div class="card-heading">Sign in</div>
+            <div class="card-sub">Enter your credentials to access the service.</div>
+            {{if .Toast}}<div class="toast">{{.Toast}}</div>{{end}}
+            <form method="post" action="{{.URL}}">
+                <div class="field">
+                    <label for="user">Username</label>
+                    <input type="text" id="user" name="user" autocomplete="username" autofocus required>
+                </div>
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                </div>
+                <input type="hidden" name="SAMLRequest" value="{{.SAMLRequest}}">
+                <input type="hidden" name="RelayState" value="{{.RelayState}}">
+                <button type="submit" class="btn-submit">Sign in</button>
+            </form>
+            <hr class="sep">
+            <a href="https://kushaldas.in/learningsaml/" class="resource" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <span class="resource-text">
+                    <span class="resource-title">Learning SAML</span><br>
+                    <span class="resource-desc">An introduction to SAML for developers</span>
+                </span>
+            </a>
+        </div>
+    </div>
+    <div class="footer"></div>
+</body>
+</html>`
+
 // GetSession returns the *Session for this request.
 //
 // If the remote user has specified a username and password in the request
@@ -103,17 +229,7 @@ func (s *Server) GetSession(w http.ResponseWriter, r *http.Request, req *saml.Id
 // back to the IDP authorize URL to restart the SAML login flow, this time establishing a
 // session based on the credentials that were provided.
 func (s *Server) sendLoginForm(w http.ResponseWriter, _ *http.Request, req *saml.IdpAuthnRequest, toast string) {
-	tmpl := template.Must(template.New("saml-post-form").Parse(`` +
-		`<html>` +
-		`<p>{{.Toast}}</p>` +
-		`<form method="post" action="{{.URL}}">` +
-		`<input type="text" name="user" placeholder="user" value="" />` +
-		`<input type="password" name="password" placeholder="password" value="" />` +
-		`<input type="hidden" name="SAMLRequest" value="{{.SAMLRequest}}" />` +
-		`<input type="hidden" name="RelayState" value="{{.RelayState}}" />` +
-		`<input type="submit" value="Log In" />` +
-		`</form>` +
-		`</html>`))
+	tmpl := template.Must(template.New("saml-post-form").Parse(loginFormTemplate))
 	data := struct {
 		Toast       string
 		URL         string
